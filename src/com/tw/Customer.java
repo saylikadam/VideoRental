@@ -15,33 +15,41 @@ public class Customer {
         _rentals.add(arg);
     }
 
-    public String getName() {
-        return _name;
-    }
+
 
     public String statement() {
-        double totalAmount = 0;
-        int frequentRenterPoints = 0;
-        String result = "Rental Record for " + getName() + "\n";
-
-        for (Rental each: _rentals) {
-            double thisAmount = 0;
-            //determine amounts for each line
-            thisAmount = each.GetRentalAmount();
-            // add frequent renter points
-            frequentRenterPoints++;
-            // add bonus for a two day new release rental
-            if (each.isNewRelease())
-                frequentRenterPoints++;
-            // show figures for this rental
-            result += "\t" + each.getMovie().getTitle() + "\t" + String.valueOf(thisAmount) + "\n";
-            totalAmount += thisAmount;
-        }
-
+        int frequentRenterPoints = getFrequentRentelPoints();
+        double totalAmount = getTotalAmount();
+        String result = getResult();
         // add footer lines
         result += "Amount owed is " + String.valueOf(totalAmount) + "\n";
         result += "You earned " + String.valueOf(frequentRenterPoints) + " frequent renter points";
 
+        return result;
+    }
+
+    private int getFrequentRentelPoints() {
+        int frequentRenterPoints = 0;
+        for (Rental each: _rentals) {
+            frequentRenterPoints = each.incrementFrequentRenterPoints(frequentRenterPoints);
+        }
+        return frequentRenterPoints;
+    }
+
+
+    private double getTotalAmount(){
+        double totalAmount = 0;
+        for (Rental each: _rentals) {
+            totalAmount += each.GetRentalAmount();
+        }
+        return totalAmount;
+    }
+
+    private String getResult(){
+        String result = "Rental Record for " + _name + "\n";
+        for (Rental each: _rentals) {
+            result += "\t" + each.getMovie().getTitle() + "\t" + String.valueOf(each.GetRentalAmount()) + "\n";
+        }
         return result;
     }
 
